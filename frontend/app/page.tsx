@@ -13,7 +13,7 @@ export default function Home() {
   const [isRunning, setIsRunning] = useState(false);
   const [autoRunInterval, setAutoRunInterval] = useState<NodeJS.Timeout | null>(null);
   const [totalTrash, setTotalTrash] = useState(0);
-  
+
   // Référence pour stocker la configuration actuelle
   const currentConfigRef = useRef<SimulationConfig>({
     num_robots: 4,
@@ -26,22 +26,27 @@ export default function Home() {
   const startSimulation = async (config: SimulationConfig) => {
     try {
       // Mettre à jour la référence de configuration
+      // console.log("test 1");
       currentConfigRef.current = config;
+      // console.log("test 2");
       setTotalTrash(config.num_trash);
-      
+      // console.log("test 3");
       // Créer une nouvelle simulation
       await API.createSimulation(config);
-      
+      // console.log("test 4");
+
       // Obtenir l'état initial de la grille
       const initialState = await API.getGridState();
+      // console.log("test 5");
       setGridState(initialState);
-      
+      // console.log("test 6");
+
       // Arrêter l'auto-run précédent si existant
       if (autoRunInterval) {
         clearInterval(autoRunInterval);
         setAutoRunInterval(null);
       }
-      
+
       setIsRunning(false);
     } catch (error) {
       console.error('Erreur lors du démarrage de la simulation:', error);
@@ -51,7 +56,7 @@ export default function Home() {
   // Avancer d'un pas dans la simulation  
   const stepSimulation = async () => {
     if (!gridState || gridState.is_finished) return;
-    
+
     try {
       const newState = await API.stepSimulation();
       setGridState(newState);
@@ -63,13 +68,13 @@ export default function Home() {
   // Démarrer l'exécution automatique
   const startAutoRun = () => {
     if (autoRunInterval || !gridState || gridState.is_finished) return;
-    
+
     setIsRunning(true);
     const interval = setInterval(async () => {
       try {
         const newState = await API.stepSimulation();
         setGridState(newState);
-        
+
         // Arrêter l'auto-run si la simulation est terminée
         if (newState.is_finished) {
           clearInterval(interval);
@@ -83,14 +88,14 @@ export default function Home() {
         setIsRunning(false);
       }
     }, 500); // Intervalle de 500ms entre chaque étape
-    
+
     setAutoRunInterval(interval);
   };
 
   // Mettre en pause l'exécution automatique
   const pauseAutoRun = () => {
     if (!autoRunInterval) return;
-    
+
     clearInterval(autoRunInterval);
     setAutoRunInterval(null);
     setIsRunning(false);
@@ -104,9 +109,9 @@ export default function Home() {
         clearInterval(autoRunInterval);
         setAutoRunInterval(null);
       }
-      
+
       setIsRunning(false);
-      
+
       // Redémarrer avec la configuration actuelle
       await startSimulation(currentConfigRef.current);
     } catch (error) {
@@ -126,17 +131,17 @@ export default function Home() {
   return (
     <main className="min-h-screen p-8 bg-gray-100">
       <h1 className="mb-8 text-3xl font-bold text-center">Simulation WALL-E</h1>
-      
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Panneau de configuration */}
         <div className="space-y-6">
-          <ConfigForm 
-            onSubmit={startSimulation} 
-            isRunning={isRunning} 
+          <ConfigForm
+            onSubmit={startSimulation}
+            isRunning={isRunning}
           />
-          
+
           {gridState && (
-            <SimulationControls 
+            <SimulationControls
               isRunning={isRunning}
               isFinished={gridState.is_finished}
               onStep={stepSimulation}
@@ -147,9 +152,9 @@ export default function Home() {
               trashRemaining={gridState.trash_remaining}
             />
           )}
-          
+
           {gridState && (
-            <SimulationStats 
+            <SimulationStats
               robots={gridState.robots}
               turnsElapsed={gridState.turns_elapsed}
               trashRemaining={gridState.trash_remaining}
@@ -157,7 +162,7 @@ export default function Home() {
             />
           )}
         </div>
-        
+
         {/* Grille de simulation */}
         <div className="col-span-2">
           {gridState ? (

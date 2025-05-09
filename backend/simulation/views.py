@@ -9,6 +9,7 @@ from .models import Simulation
 from .serializers import SimulationSerializer, SimulationConfigSerializer, GridStateSerializer
 from .simulation_engine import SimulationEngine
 
+global_engine = None
 
 class SimulationViewSet(viewsets.ModelViewSet):
     """
@@ -32,9 +33,9 @@ class SimulationViewSet(viewsets.ModelViewSet):
                 base_x=serializer.validated_data['base_x'],
                 base_y=serializer.validated_data['base_y']
             )
-
+            global global_engine
             # Initialiser le moteur de simulation
-            self.simulation_engine = SimulationEngine(
+            global_engine = SimulationEngine(
                 grid_size=simulation.grid_size,
                 num_robots=simulation.num_robots,
                 num_trash=simulation.num_trash,
@@ -47,9 +48,10 @@ class SimulationViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def step(self, request):
         """Endpoint pour avancer d'un tour dans la simulation"""
-        if not self.simulation_engine:
+        global global_engine
+        if not global_engine:
             return Response({"error": "Aucune simulation n'est en cours"}, status=status.HTTP_400_BAD_REQUEST)
-
+        """
         # Exécuter un tour de simulation
         is_finished = self.simulation_engine.step()
 
@@ -72,13 +74,38 @@ class SimulationViewSet(viewsets.ModelViewSet):
         serializer.is_valid()  # On suppose que les données sont valides
 
         return Response(serializer.data)
+        """
+        # Exécuter un tour de simulation
+        is_finished = global_engine.step()
+
+        # Mettre à jour la simulation en base de données
+        simulation = Simulation.objects.latest('created_at')
+        simulation.turns_elapsed += 1
+        simulation.is_running = not is_finished
+        simulation.is_finished = is_finished
+        simulation.save()
+
+        # Retourner l'état actuel de la grille
+        grid_state = global_engine.get_grid_state()
+        serializer = GridStateSerializer(data={
+            "grid": grid_state["grid"],
+            "robots": grid_state["robots"],
+            "trash_remaining": grid_state["trash_remaining"],
+            "turns_elapsed": simulation.turns_elapsed,
+            "is_finished": is_finished
+        })
+        serializer.is_valid()  # On suppose que les données sont valides
+
+        return Response(serializer.data)
+
 
     @action(detail=False, methods=['get'])
     def state(self, request):
         """Endpoint pour obtenir l'état actuel de la simulation"""
-        if not self.simulation_engine:
+        global global_engine
+        if not global_engine:
             return Response({"error": "Aucune simulation n'est en cours"}, status=status.HTTP_400_BAD_REQUEST)
-
+        """
         simulation = Simulation.objects.latest('created_at')
         grid_state = self.simulation_engine.get_grid_state()
 
@@ -92,6 +119,8 @@ class SimulationViewSet(viewsets.ModelViewSet):
         serializer.is_valid()  # On suppose que les données sont valides
 
         return Response(serializer.data)
+        """
+        return Response(global_engine.get_grid_state())
 
     @action(detail=False, methods=['post'])
     def reset(self, request):

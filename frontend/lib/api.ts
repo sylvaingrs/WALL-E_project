@@ -60,6 +60,7 @@ export default {
   // Obtenir l'état actuel de la grille
   getGridState: async (): Promise<GridState> => {
     const response = await API.get('/simulations/state/');
+    // console.log('Response', response);
     return response.data;
   },
 
