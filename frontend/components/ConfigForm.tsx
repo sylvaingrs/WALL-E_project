@@ -18,7 +18,7 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ onSubmit, isRunning }) => {
     const { name, value } = e.target;
     setConfig(prev => ({
       ...prev,
-      [name]: parseInt(value)
+      [name]: value === '' ? '' : parseInt(value)
     }));
   };
 
@@ -29,10 +29,10 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ onSubmit, isRunning }) => {
 
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-white rounded shadow">
-      <h2 className="mb-4 text-xl font-bold">Configuration de la simulation</h2>
+      <h2 className="mb-4 text-xl font-bold text-gray-500">Configuration de la simulation</h2>
 
       <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium">
+        <label className="block mb-2 text-sm font-medium text-gray-500">
           Nombre de robots:
           <input
             type="number"
@@ -48,7 +48,7 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ onSubmit, isRunning }) => {
       </div>
 
       <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium">
+        <label className="block mb-2 text-sm font-medium text-gray-500">
           Nombre de déchets:
           <input
             type="number"
@@ -64,7 +64,7 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ onSubmit, isRunning }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <label className="block mb-2 text-sm font-medium">
+        <label className="block mb-2 text-sm font-medium text-gray-500">
           Position X de la base:
           <input
             type="number"
@@ -78,7 +78,7 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ onSubmit, isRunning }) => {
           />
         </label>
 
-        <label className="block mb-2 text-sm font-medium">
+        <label className="block mb-2 text-sm font-medium text-gray-500">
           Position Y de la base:
           <input
             type="number"

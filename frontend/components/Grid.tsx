@@ -13,21 +13,29 @@ const Grid: React.FC<GridProps> = ({ grid, robots }) => {
   const gridSize = grid.length * cellSize;
 
   // Fonction pour obtenir la couleur d'une cellule en fonction de son contenu
-  const getCellColor = (cellContent: string): string => {
-    switch (cellContent) {
-      case 'R': return 'bg-blue-500'; // Robot
+  const getCellColor = (cellContent: string, robot: Robot | undefined): string => {
+
+      if (robot) {
+        return robot.carrying_trash ? 'bg-orange-500' : 'bg-blue-500'
+    }
+
+      switch (cellContent) {
+      // case 'R': return 'bg-blue-500'; // Robot
       case 'T': return 'bg-yellow-500'; // Déchet
       case 'B': return 'bg-green-500'; // Base
+      // case 'RT': return 'bg-orange-500'; // Robot qui prend un déchet
       default: return 'bg-gray-200'; // Cellule vide
     }
   };
 
   // Fonction pour obtenir un texte pour la cellule en fonction de son contenu
   const getCellText = (cellContent: string): string => {
-    switch (cellContent) {
+
+      switch (cellContent) {
       case 'R': return 'R';
       case 'T': return 'T';
       case 'B': return 'B';
+      case 'RT': return 'R';
       default: return '';
     }
   };
@@ -54,7 +62,7 @@ const Grid: React.FC<GridProps> = ({ grid, robots }) => {
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`flex items-center justify-center border border-gray-300 ${getCellColor(cell)}`}
+                className={`flex items-center justify-center border border-gray-300 ${getCellColor(cell, robot)}`}
                 style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
               >
                 {getCellText(cell)}

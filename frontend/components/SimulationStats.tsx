@@ -25,11 +25,11 @@ const SimulationStats: React.FC<SimulationStatsProps> = ({
 
   return (
     <div className="p-4 bg-white rounded shadow">
-      <h2 className="mb-4 text-xl font-bold">Statistiques</h2>
+      <h2 className="mb-4 text-xl font-bold text-gray-500">Statistiques</h2>
 
       <div className="space-y-3">
         <div>
-          <h3 className="mb-1 font-medium">Progrès de la collecte</h3>
+          <h3 className="mb-1 font-medium text-gray-500">Progrès de la collecte</h3>
           <div className="w-full h-4 bg-gray-200 rounded-full">
             <div
               className="h-4 bg-green-500 rounded-full"
@@ -43,23 +43,23 @@ const SimulationStats: React.FC<SimulationStatsProps> = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <h3 className="font-medium">Robots actifs</h3>
-            <p className="text-lg">{robots.length}</p>
+            <h3 className="font-medium text-gray-500">Robots actifs</h3>
+            <p className="text-lg text-gray-500">{robots.length}</p>
           </div>
 
           <div>
-            <h3 className="font-medium">Robots transportant</h3>
-            <p className="text-lg">{robotsCarrying} / {robots.length}</p>
+            <h3 className="font-medium text-gray-500">Robots transportant</h3>
+            <p className="text-lg text-gray-500">{robotsCarrying} / {robots.length}</p>
           </div>
 
           <div>
-            <h3 className="font-medium">Tours</h3>
-            <p className="text-lg">{turnsElapsed}</p>
+            <h3 className="font-medium text-gray-500">Tours</h3>
+            <p className="text-lg text-gray-500">{turnsElapsed}</p>
           </div>
 
           <div>
-            <h3 className="font-medium">Efficacité</h3>
-            <p className="text-lg">
+            <h3 className="font-medium text-gray-500">Efficacité</h3>
+            <p className="text-lg text-gray-500">
               {turnsElapsed > 0 ? (collectedTrash / turnsElapsed).toFixed(2) : '0'}
               <span className="text-sm text-gray-600"> déchets/tour</span>
             </p>

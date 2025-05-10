@@ -130,7 +130,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-8 bg-gray-100">
-      <h1 className="mb-8 text-3xl font-bold text-center">Simulation WALL-E</h1>
+      <h1 className="mb-8 text-3xl font-bold text-center text-gray-500">Simulation WALL-E</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Panneau de configuration */}
@@ -167,7 +167,7 @@ export default function Home() {
         <div className="col-span-2">
           {gridState ? (
             <div className="p-4 bg-white rounded shadow">
-              <h2 className="mb-4 text-xl font-bold">Environnement de simulation</h2>
+              <h2 className="mb-4 text-xl font-bold text-gray-500">Environnement de simulation</h2>
               <div className="flex items-center justify-center">
                 <Grid grid={gridState.grid} robots={gridState.robots} />
               </div>

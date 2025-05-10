@@ -23,21 +23,21 @@ const SimulationControls: React.FC<SimulationControlsProps> = ({
 }) => {
   return (
     <div className="p-4 bg-white rounded shadow">
-      <h2 className="mb-4 text-xl font-bold">Contrôles de simulation</h2>
+      <h2 className="mb-4 text-xl font-bold text-gray-500">Contrôles de simulation</h2>
 
       <div className="mb-4 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="font-medium">Tours écoulés:</span>
+          <span className="font-medium text-gray-500">Tours écoulés:</span>
           <span className="text-blue-600">{turnsElapsed}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="font-medium">Déchets restants:</span>
+          <span className="font-medium text-gray-500">Déchets restants:</span>
           <span className="text-yellow-600">{trashRemaining}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="font-medium">État:</span>
+          <span className="font-medium text-gray-500">État:</span>
           <span className={isFinished ? 'text-green-600' : isRunning ? 'text-blue-600' : 'text-gray-600'}>
             {isFinished ? 'Terminé' : isRunning ? 'En cours' : 'En attente'}
           </span>
