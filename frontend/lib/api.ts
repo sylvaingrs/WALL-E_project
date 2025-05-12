@@ -46,27 +46,28 @@ export interface Simulation {
 // Service API
 export default {
   // Créer une nouvelle simulation
-  createSimulation: async (config: SimulationConfig): Promise<Simulation> => {
+  createSimulationAPI: async (config: SimulationConfig): Promise<Simulation> => {
     const response = await API.post('/simulations/create_simulation/', config);
     return response.data;
   },
 
   // Avancer d'un pas dans la simulation
-  stepSimulation: async (): Promise<GridState> => {
+  stepSimulationAPI: async (): Promise<GridState> => {
     const response = await API.post('/simulations/step/');
     return response.data;
   },
 
   // Obtenir l'état actuel de la grille
-  getGridState: async (): Promise<GridState> => {
+  getGridStateAPI: async (): Promise<GridState> => {
     const response = await API.get('/simulations/state/');
     // console.log('Response', response);
     return response.data;
   },
-
+  /*
   // Réinitialiser la simulation
   resetSimulation: async (config: SimulationConfig): Promise<Simulation> => {
     const response = await API.post('/simulations/reset/', config);
     return response.data;
   }
+   */
 };

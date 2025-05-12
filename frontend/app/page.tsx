@@ -32,11 +32,11 @@ export default function Home() {
       setTotalTrash(config.num_trash);
       // console.log("test 3");
       // Créer une nouvelle simulation
-      await API.createSimulation(config);
+      await API.createSimulationAPI(config);
       // console.log("test 4");
 
       // Obtenir l'état initial de la grille
-      const initialState = await API.getGridState();
+      const initialState = await API.getGridStateAPI();
       // console.log("test 5");
       setGridState(initialState);
       // console.log("test 6");
@@ -58,7 +58,7 @@ export default function Home() {
     if (!gridState || gridState.is_finished) return;
 
     try {
-      const newState = await API.stepSimulation();
+      const newState = await API.stepSimulationAPI();
       setGridState(newState);
     } catch (error) {
       console.error('Erreur lors de l\'avancement de la simulation:', error);
@@ -72,7 +72,7 @@ export default function Home() {
     setIsRunning(true);
     const interval = setInterval(async () => {
       try {
-        const newState = await API.stepSimulation();
+        const newState = await API.stepSimulationAPI();
         setGridState(newState);
 
         // Arrêter l'auto-run si la simulation est terminée

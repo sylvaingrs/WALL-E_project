@@ -2,8 +2,9 @@ import random
 from typing import List, Tuple, Dict, Set
 from queue import PriorityQueue
 
+
 def a_star(start, goal, grid, obstacles):
-    def heuristic(a, b):
+    def manhattanDistance(a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])  # distance de Manhattan
 
     frontier = PriorityQueue()
@@ -26,7 +27,7 @@ def a_star(start, goal, grid, obstacles):
                 new_cost = cost_so_far[current] + 1
                 if next_node not in cost_so_far or new_cost < cost_so_far[next_node]:
                     cost_so_far[next_node] = new_cost
-                    priority = new_cost + heuristic(goal, next_node)
+                    priority = new_cost + manhattanDistance(goal, next_node)
                     frontier.put((priority, next_node))
                     came_from[next_node] = current
 
@@ -43,8 +44,6 @@ def a_star(start, goal, grid, obstacles):
     return path
 
 class Robot:
-    """Classe représentant un robot"""
-
     def __init__(self, x: int, y: int, robot_id: int):
         self.x = x
         self.y = y
@@ -54,10 +53,9 @@ class Robot:
         self.known_trash: Set[Tuple[int, int]] = set()
         self.visited_cells: Set[Tuple[int, int]] = {(x, y)}
         self.random_direction: Tuple[int, int] = {0, 0}
-        self.setp_in_direction: int = 0
+        self.steps_in_direction: int = 0
 
     def move(self, dx: int, dy: int, grid_size: int, obstacles: List[Tuple[int, int]]) -> bool:
-        """Déplace le robot dans la direction spécifiée si possible"""
         new_x = self.x + dx
         new_y = self.y + dy
 
@@ -70,22 +68,19 @@ class Robot:
         return False
 
     def pickup_trash(self) -> bool:
-        """Le robot ramasse un déchet s'il n'en transporte pas déjà un"""
         if not self.carrying_trash:
-            print(f"Robot {self.id} picked up trash")
+            # print(f"Robot {self.id} picked up trash")
             self.carrying_trash = True
             return True
         return False
 
     def deposit_trash(self) -> bool:
-        """Le robot dépose un déchet s'il en transporte un"""
         if self.carrying_trash:
             self.carrying_trash = False
             return True
         return False
 
     def see_around(self, grid: List[List[str]]) -> List[Tuple[int, int, str]]:
-        """Retourne les cellules visibles autour du robot dans un rayon de 5"""
         visible_cells = []
         for i in range(-self.vision_radius, self.vision_radius + 1):
             for j in range(-self.vision_radius, self.vision_radius + 1):
@@ -96,7 +91,6 @@ class Robot:
 
     def decide_action(self, grid: List[List[str]], base_position: Tuple[int, int],
                       robots_positions: List[Tuple[int, int]]) -> str:
-        """Décide de l'action à effectuer (version de base: mouvement aléatoire)"""
         if self.carrying_trash:
             # Si on porte un déchet, essayer d'aller vers la base
             base_x, base_y = base_position
@@ -104,6 +98,7 @@ class Robot:
                 return "deposit"
 
             # Sinon se déplacer vers la base
+
             dx = 1 if base_x > self.x else (-1 if base_x < self.x else 0)
             dy = 1 if base_y > self.y else (-1 if base_y < self.y else 0)
 
@@ -130,7 +125,9 @@ class Robot:
                 next_x, next_y = path[0]
                 dx, dy = next_x - self.x, next_y - self.y
                 return f"move:{dx}:{dy}"
-        if self.setp_in_direction <= 0 or self.random_direction == {0, 0}:
+
+        # Déplacements aléatoires
+        if self.steps_in_direction <= 0 or self.random_direction == {0, 0}:
             directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
             random.shuffle(directions)
             for dx, dy in directions:
@@ -138,8 +135,9 @@ class Robot:
                 if (0 <= new_x < len(grid) and 0 <= new_y < len(grid[0])
                         and (new_x, new_y) not in robots_positions):
                     self.random_direction = (dx, dy)
-                    self.steps_in_direction = 10  # Par exemple 5 déplacements
+                    self.steps_in_direction = 10  # Par exemple 10 déplacements
                     break
+
         # Tenter d'avancer dans la direction actuelle
         dx, dy = self.random_direction
         new_x, new_y = self.x + dx, self.y + dy
@@ -155,8 +153,6 @@ class Robot:
 
 
 class SimulationEngine:
-    """Moteur de simulation pour les robots nettoyeurs"""
-
     def __init__(self, grid_size: int, num_robots: int, num_trash: int, base_position: Tuple[int, int]):
         self.grid_size = grid_size
         self.num_robots = num_robots
@@ -180,7 +176,6 @@ class SimulationEngine:
         self._place_trash()
 
     def _place_robots(self):
-        """Place les robots aléatoirement sur la grille"""
         positions = []
 
         # S'assurer que les robots ne sont pas placés sur la base
@@ -189,10 +184,9 @@ class SimulationEngine:
             if (x, y) != self.base_position and (x, y) not in positions:
                 positions.append((x, y))
                 self.robots.append(Robot(x, y, len(self.robots)))
-                self.grid[x][y] = "R"  # R pour Robot
+                self.grid[x][y] = "R"
 
     def _place_trash(self):
-        """Place les déchets aléatoirement sur la grille"""
         # Obtenir les positions occupées (base + robots)
         occupied = {self.base_position} | {(robot.x, robot.y) for robot in self.robots}
 
@@ -201,10 +195,9 @@ class SimulationEngine:
             x, y = random.randint(0, self.grid_size - 1), random.randint(0, self.grid_size - 1)
             if (x, y) not in occupied and (x, y) not in self.trash_positions:
                 self.trash_positions.add((x, y))
-                self.grid[x][y] = "T"  # T pour Trash (déchet)
+                self.grid[x][y] = "T"
 
     def step(self) -> bool:
-        """Exécute un tour de simulation. Retourne True si la simulation est terminée."""
         # Si plus de déchets, la simulation est terminée
         if self.deposited_trash >= self.num_trash:
             return True
@@ -253,7 +246,6 @@ class SimulationEngine:
 
             elif action == "pickup":
                 if (robot.x, robot.y) in self.trash_positions and robot.pickup_trash():
-                #if robot.pickup_trash:
                     self.trash_positions.remove((robot.x, robot.y))
                     self.grid[robot.x][robot.y] = "R"  # Le robot est maintenant sur la case (sans déchet)
                     # Informer les autres robots que ce déchet a été ramassé
@@ -267,12 +259,11 @@ class SimulationEngine:
 
             # Pour "wait", aucune action à effectuer
 
-        return False  # La simulation continue
+        return False
 
     def get_grid_state(self) -> Dict:
-        """Retourne l'état actuel de la grille pour l'API"""
         return {
-            "grid": [row[:] for row in self.grid],  # Copie profonde de la grille
+            "grid": [row[:] for row in self.grid],
             "robots": [
                 {"id": robot.id, "x": robot.x, "y": robot.y, "carrying_trash": robot.carrying_trash}
                 for robot in self.robots

@@ -19,7 +19,7 @@ elif [ "$1" = "build" ]; then
   cd backend
   python3 -m venv venv
   source venv/bin/activate  # Pour macOS/Linux
-  pip install django
+  pip install -r requirements.txt
 
   # Installation du frontend (Next.js)
   echo "Installation des dépendances pour le frontend..."
@@ -45,6 +45,7 @@ elif [ "$1" = "run" ]; then
   # Attendre que l'utilisateur appuie sur Ctrl+C pour tout arrêter
   wait $frontend_pid
   wait $backend_pid
+  deactivate
 else
   # Si une commande inconnue est passée
   echo "Commande inconnue : $1"
