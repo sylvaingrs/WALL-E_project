@@ -21,7 +21,7 @@ class SimulationViewSet(viewsets.ModelViewSet):
     simulation_engine = None
 
     @action(detail=False, methods=['post'])
-    def create_simulationEndpoint(self, request):
+    def create_simulation(self, request):
         serializer = SimulationConfigSerializer(data=request.data)
         if serializer.is_valid():
             # Créer une nouvelle simulation dans la base de données
@@ -44,7 +44,7 @@ class SimulationViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
-    def stepEndpoint(self, request):
+    def step(self, request):
         global global_engine
         if not global_engine:
             return Response({"error": "Aucune simulation n'est en cours"}, status=status.HTTP_400_BAD_REQUEST)
@@ -73,14 +73,14 @@ class SimulationViewSet(viewsets.ModelViewSet):
 
 
     @action(detail=False, methods=['get'])
-    def stateEndpoint(self, request):
+    def state(self, request):
         global global_engine
         if not global_engine:
             return Response({"error": "Aucune simulation n'est en cours"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(global_engine.get_grid_state())
 
     @action(detail=False, methods=['post'])
-    def resetEndpoint(self, request):
+    def reset(self, request):
         serializer = SimulationConfigSerializer(data=request.data)
         if serializer.is_valid():
             # Créer une nouvelle simulation
